@@ -1,18 +1,16 @@
 import os
 import psycopg2
-from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 load_dotenv()
 
 def get_conn():
-    url = urlparse(os.environ['SUPABASE_URL'])
     return psycopg2.connect(
-        host=url.hostname,
-        port=url.port,
-        database=url.path[1:],
-        user=url.username,
-        password=url.password,
+        host=os.environ['SUPABASE_HOST'],
+        port=int(os.environ['SUPABASE_PORT']),
+        database=os.environ['SUPABASE_DB'],
+        user=os.environ['SUPABASE_USER'],
+        password=os.environ['SUPABASE_PASSWORD'],
         sslmode='require'
     )
 

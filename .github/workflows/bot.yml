@@ -27,7 +27,11 @@ jobs:
           TWILIO_WHATSAPP_NUMBER: ${{ secrets.TWILIO_WHATSAPP_NUMBER }}
           MY_PHONE_NUMBER: ${{ secrets.MY_PHONE_NUMBER }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_HOST: ${{ secrets.SUPABASE_HOST }}
+          SUPABASE_PORT: ${{ secrets.SUPABASE_PORT }}
+          SUPABASE_USER: ${{ secrets.SUPABASE_USER }}
+          SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+          SUPABASE_DB: ${{ secrets.SUPABASE_DB }}
         run: |
           cd maccabi_alert_bot
           python -c "from database.state_manager import init_db; from main import run_pipeline; init_db(); run_pipeline()"
