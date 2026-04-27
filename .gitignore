@@ -1,0 +1,20 @@
+# Secrets
+.env
+
+# Database & state
+*.db
+processed_articles.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Virtual environments
+venv/
+.venv/
