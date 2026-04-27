@@ -1,17 +1,15 @@
-import sqlite3
 import os
+import psycopg2
+from dotenv import load_dotenv
 
-# הקובץ בו יישמרו הנתונים (ייווצר אוטומטית בתיקיית השורש של הפרויקט)
-DB_PATH = "maccabi_alerts.db"
+load_dotenv()
+
+def get_conn():
+    return psycopg2.connect(os.environ['SUPABASE_URL'], sslmode='require')
 
 def init_db():
-    """
-    יוצר את מסד הנתונים והטבלה אם הם לא קיימים.
-    """
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_conn()
     cursor = conn.cursor()
-    
-    # יוצר טבלה ששומרת את כתובת הכתבה (כמפתח ראשי למניעת כפילויות) ואת זמן הגילוי
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS processed_articles (
             url TEXT PRIMARY KEY,
@@ -22,37 +20,21 @@ def init_db():
     conn.close()
 
 def process_new_article(url):
-    """
-    בודק אם הכתבה חדשה. אם כן - שומר אותה ומחזיר True.
-    אם היא כבר קיימת במסד הנתונים - מחזיר False.
-    """
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_conn()
     cursor = conn.cursor()
-    
-    # בודק אם ה-URL כבר קיים
-    cursor.execute('SELECT 1 FROM processed_articles WHERE url = ?', (url,))
+
+    cursor.execute('SELECT 1 FROM processed_articles WHERE url = %s', (url,))
     exists = cursor.fetchone()
-    
+
     if exists:
-        conn.close()
-        return False # הכתבה כבר טופלה בעבר
-        
-    # אם הגענו לכאן, הכתבה חדשה. נשמור אותה כדי לא לשלוח עליה התראה שוב
-    try:
-        cursor.execute('INSERT INTO processed_articles (url) VALUES (?)', (url,))
-        conn.commit()
-        conn.close()
-        return True # כתבה חדשה בהצלחה
-    except sqlite3.IntegrityError:
         conn.close()
         return False
 
-# רץ רק אם נפעיל את הקובץ ישירות כדי לוודא שהטבלה נוצרת
-if __name__ == "__main__":
-    print("Initializing Database...")
-    init_db()
-    print("Testing functionality...")
-    
-    test_url = "https://mhaifafc.com/news/test-123"
-    print(f"First insertion (should be True): {process_new_article(test_url)}")
-    print(f"Second insertion (should be False): {process_new_article(test_url)}")
+    try:
+        cursor.execute('INSERT INTO processed_articles (url) VALUES (%s)', (url,))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception:
+        conn.close()
+        return False

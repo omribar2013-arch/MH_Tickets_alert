@@ -1,0 +1,7 @@
+requests
+beautifulsoup4
+twilio
+google-generativeai
+python-dotenv
+psycopg2-binary
+apscheduler
