@@ -3,5 +3,5 @@ beautifulsoup4
 twilio
 google-genai
 python-dotenv
-psycopg2-binary
+pymongo
 apscheduler
