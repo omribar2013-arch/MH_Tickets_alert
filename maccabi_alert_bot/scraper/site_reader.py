@@ -37,7 +37,8 @@ def extract_ticket_articles(soup):
         if not text:
             continue
             
-        if "מכירת כרטיסים" in text:
+        # TEMP TEST: original keyword is "מכירת כרטיסים" — restore after end-to-end test
+        if "עמדת המועדון" in text:
             href = link.get('href')
             full_url = urljoin(BASE_URL, href)
             
