@@ -28,6 +28,9 @@ jobs:
           MY_PHONE_NUMBER: ${{ secrets.MY_PHONE_NUMBER }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           MONGO_CONNECTION_STR: ${{ secrets.MONGO_CONNECTION_STR }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+          ALERT_TO: ${{ secrets.ALERT_TO }}
         run: |
           cd maccabi_alert_bot
           python -c "from database.state_manager import init_db; from main import run_pipeline; init_db(); run_pipeline()"

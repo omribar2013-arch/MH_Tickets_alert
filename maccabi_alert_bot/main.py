@@ -3,6 +3,7 @@ from scraper.site_reader import fetch_maccabi_news, extract_ticket_articles, fet
 from nlp.parser import parse_ticket_info
 from database.state_manager import init_db, process_new_article
 from notifications.whatsapp import send_whatsapp_alert
+from notifications.email_alert import send_failure_email
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 def run_pipeline():
@@ -29,7 +30,9 @@ def run_pipeline():
         print(f"\n[INFO] Processing: '{title}'")
         
         # 3. התייעצות עם מסד הנתונים - האם זו כתבה שכבר שלחנו?
-        if not process_new_article(url, check_only=True):
+        is_new = process_new_article(url)
+
+        if not is_new:
             print("[SKIP] Alert already sent for this article. Skipping.")
             continue
 
@@ -60,13 +63,14 @@ def run_pipeline():
             
         # 6. שליחת ההודעה דרך Twilio
         print("[ACTION] Sending WhatsApp alert...")
-        success = send_whatsapp_alert(title, url, extraction_text)
-        
-        if success:
-            process_new_article(url)
+        result = send_whatsapp_alert(title, url, extraction_text)
+
+        if result["ok"]:
             print("[SUCCESS] WhatsApp Alert sent successfully!")
         else:
-            print("[ERROR] Failed to send WhatsApp alert.")
+            print(f"[ERROR] Failed to send WhatsApp alert. Reason: {result['reason']}")
+            print("[ACTION] Sending failure email as fallback...")
+            send_failure_email(title, url, extraction_text, result["reason"])
 
     print("--------------------------------------------------")
 if __name__ == "__main__":
