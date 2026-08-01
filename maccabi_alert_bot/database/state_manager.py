@@ -14,8 +14,10 @@ def init_db():
     db = get_db()
     db.processed_articles.create_index('url', unique=True)
 
-def process_new_article(url):
+def process_new_article(url, check_only=False):
     db = get_db()
+    if check_only:
+        return db.processed_articles.find_one({'url': url}) is None
     try:
         db.processed_articles.insert_one({
             'url': url,

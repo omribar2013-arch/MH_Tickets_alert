@@ -29,12 +29,10 @@ def run_pipeline():
         print(f"\n[INFO] Processing: '{title}'")
         
         # 3. התייעצות עם מסד הנתונים - האם זו כתבה שכבר שלחנו?
-        is_new = process_new_article(url)
-        
-        if not is_new:
+        if not process_new_article(url, check_only=True):
             print("[SKIP] Alert already sent for this article. Skipping.")
             continue
-            
+
         print("[ACTION] Brand new ticket sale! Fetching details...")
         
         # 4. חילוץ עומק של טקסט הכתבה
@@ -65,6 +63,7 @@ def run_pipeline():
         success = send_whatsapp_alert(title, url, extraction_text)
         
         if success:
+            process_new_article(url)
             print("[SUCCESS] WhatsApp Alert sent successfully!")
         else:
             print("[ERROR] Failed to send WhatsApp alert.")
