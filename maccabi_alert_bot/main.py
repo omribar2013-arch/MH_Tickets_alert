@@ -61,7 +61,7 @@ def run_pipeline():
             else:
                 print("[WARNING] AI parsing failed. Proceeding with basic alert.")
             
-        # 6. שליחת ההודעה דרך Twilio
+        # 6. שליחת ההודעה דרך Telegram
         print("[ACTION] Sending Telegram alert...")
         result = send_whatsapp_alert(title, url, extraction_text)
 
