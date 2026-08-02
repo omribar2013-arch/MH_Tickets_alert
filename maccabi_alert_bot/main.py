@@ -57,18 +57,18 @@ def run_pipeline():
                 summary = parsed_data.get("summary", "")
                 
                 extraction_text = f"🏟️ {summary}\n\n⏰ *פתיחת מכירה:* {start_time}\n\n🎫 *זכאויות:*\n{eligibility_text}"
-                print("\n[SUCCESS] Extracted Data Ready for WhatsApp!")
+                print("\n[SUCCESS] Extracted Data Ready for Telegram!")
             else:
                 print("[WARNING] AI parsing failed. Proceeding with basic alert.")
             
         # 6. שליחת ההודעה דרך Twilio
-        print("[ACTION] Sending WhatsApp alert...")
+        print("[ACTION] Sending Telegram alert...")
         result = send_whatsapp_alert(title, url, extraction_text)
 
         if result["ok"]:
-            print("[SUCCESS] WhatsApp Alert sent successfully!")
+            print("[SUCCESS] Telegram Alert sent successfully!")
         else:
-            print(f"[ERROR] Failed to send WhatsApp alert. Reason: {result['reason']}")
+            print(f"[ERROR] Failed to send Telegram alert. Reason: {result['reason']}")
             print("[ACTION] Sending failure email as fallback...")
             send_failure_email(title, url, extraction_text, result["reason"])
 
