@@ -24,3 +24,11 @@ def process_new_article(url):
         return True
     except DuplicateKeyError:
         return False
+
+def unmark_article(url):
+    """
+    מוחק כתבה מהמסד כדי שתיבדק שוב במחזור הבא.
+    בשימוש כשההתראה נכשלה - אין ערוץ גיבוי, אז לא נאבד את הכתבה.
+    """
+    db = get_db()
+    db.processed_articles.delete_one({'url': url})

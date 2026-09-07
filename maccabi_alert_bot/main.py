@@ -1,9 +1,8 @@
 import json
 from scraper.site_reader import fetch_maccabi_news, extract_ticket_articles, fetch_article_content
 from nlp.parser import parse_ticket_info
-from database.state_manager import init_db, process_new_article
-from notifications.whatsapp import send_whatsapp_alert
-from notifications.email_alert import send_failure_email
+from database.state_manager import init_db, process_new_article, unmark_article
+from notifications.email_alert import send_alert_email
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 def run_pipeline():
@@ -56,21 +55,22 @@ def run_pipeline():
                 eligibility_text = "\n".join([f"• {e}" for e in eligibility_list])
                 summary = parsed_data.get("summary", "")
                 
-                extraction_text = f"🏟️ {summary}\n\n⏰ *פתיחת מכירה:* {start_time}\n\n🎫 *זכאויות:*\n{eligibility_text}"
-                print("\n[SUCCESS] Extracted Data Ready for Telegram!")
+                extraction_text = f"🏟️ {summary}\n\n⏰ פתיחת מכירה: {start_time}\n\n🎫 זכאויות:\n{eligibility_text}"
+                print("\n[SUCCESS] Extracted Data Ready for Email!")
             else:
                 print("[WARNING] AI parsing failed. Proceeding with basic alert.")
             
-        # 6. שליחת ההודעה דרך Telegram
-        print("[ACTION] Sending Telegram alert...")
-        result = send_whatsapp_alert(title, url, extraction_text)
+        # 6. שליחת ההודעה במייל
+        print("[ACTION] Sending email alert...")
+        result = send_alert_email(title, url, extraction_text)
 
         if result["ok"]:
-            print("[SUCCESS] Telegram Alert sent successfully!")
+            print("[SUCCESS] Email alert sent successfully!")
         else:
-            print(f"[ERROR] Failed to send Telegram alert. Reason: {result['reason']}")
-            print("[ACTION] Sending failure email as fallback...")
-            send_failure_email(title, url, extraction_text, result["reason"])
+            print(f"[ERROR] Failed to send email alert. Reason: {result['reason']}")
+            # אין ערוץ גיבוי - משחררים את הכתבה כדי שהמחזור הבא ינסה שוב
+            print("[ACTION] Unmarking article so the next cycle retries it.")
+            unmark_article(url)
 
     print("--------------------------------------------------")
 if __name__ == "__main__":
