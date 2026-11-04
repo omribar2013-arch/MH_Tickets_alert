@@ -31,7 +31,7 @@
     <Compile Include="main.py" />
     <Compile Include="nlp\parser.py" />
     <Compile Include="nlp\__init__.py" />
-    <Compile Include="notifications\whatsapp.py" />
+    <Compile Include="notifications\email_alert.py" />
     <Compile Include="notifications\__init__.py" />
     <Compile Include="scraper\site_reader.py" />
     <Compile Include="scraper\__init__.py" />

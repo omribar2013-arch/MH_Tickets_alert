@@ -23,7 +23,8 @@ def send_alert_email(title, url, extraction_text=""):
     """
     user = os.getenv("EMAIL_USER")
     password = os.getenv("EMAIL_APP_PASSWORD")
-    to_addr = os.getenv("ALERT_TO", user)
+    # "or" ולא ברירת מחדל של getenv: ב-GitHub Actions סוד חסר מגיע כמחרוזת ריקה
+    to_addr = os.getenv("ALERT_TO") or user
 
     if not all([user, password, to_addr]):
         reason = "Missing email credentials (EMAIL_USER / EMAIL_APP_PASSWORD / ALERT_TO)."
